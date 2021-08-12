@@ -1,5 +1,5 @@
-const arr = ["sudna","ss","hello" ,"hh","jj",'dd']
+const arr = ['sudna', 'ss', 'hello', 'hh', 'jj', 'dd'];
 
-const hello = arr.slice(0,4)
+const hello = arr.slice(2);
 
-console.log(hello,arr);
+console.log(hello);

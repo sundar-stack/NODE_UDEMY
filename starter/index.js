@@ -21,12 +21,6 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'succesfully running' });
 });
 
-// app.get('/api/v1/tours',getAllTours)
-// app.post('/api/v1/tours',addTour)
-
-///we can modify this even more
-//ROUTING IN EXPRESS WE CAN USE CHAINING FOR THE SAME ROUTES
-
 const toursRouter = require('./routes/toursRoutes');
 const usersRouter = require('./routes/userRoutes');
 
