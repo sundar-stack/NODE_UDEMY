@@ -37,7 +37,7 @@ const toursSchema = new Schema({
   },
   summary: {
     type: String,
-    required: [true, 'Age Required'],
+    required: [true, 'A tour must have a summary'],
   },
   description: {
     type: String,
@@ -52,6 +52,7 @@ const toursSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+    select: false, //select:false permanently hides the field in the api response
   },
 });
 
