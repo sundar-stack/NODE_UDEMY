@@ -12,8 +12,12 @@ router
 
 //aliasing routes for special filtering
 router.route('/top-5-cheap').get(toursController.aliasTopTours,toursController.getAllTours)
+
+router.route('/getStats').get(toursController.getTourStats)
+router.get('/monthlyTours',toursController.monthlyTours)
   
 router.get('/practice',practiceController.practiceGetAllTours)
+
 
 router
   .route('/:id')

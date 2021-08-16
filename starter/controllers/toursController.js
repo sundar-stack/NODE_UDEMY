@@ -8,8 +8,6 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-//sudnar
-
 exports.addTour = async (req, res) => {
   const body = req.body;
   try {
@@ -90,6 +88,71 @@ exports.deleteTour = async (req, res) => {
     res.status(201).json({
       status: 'success',
       data: null,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'failed',
+      message: error,
+    });
+  }
+};
+
+//AGGREFATION PIPELINING
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await toursModel.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: { $toUpper: '$difficulty' },
+          sum: { $sum: 1 },
+          sumOfRatings: { $sum: '$ratingsAverage' },
+          avgRatings: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          maxPrice: { $avg: '$price' },
+          minPrice: { $avg: '$price' },
+        },
+      },
+      {
+        $sort: { avgPrice: 1 },
+      },
+      {
+        $match: { _id: { $ne: 'EASY' } },
+      },
+    ]);
+
+    res.status(201).json({
+      status: 'success',
+      count: stats.length,
+      data: stats,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'failed',
+      message: error,
+    });
+  }
+};
+exports.monthlyTours = async (req, res) => {
+  // const year = req.params.year;
+  try {
+    const tours = await toursModel.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $group:{
+          _id:"$startDates"
+        }
+      }
+    ]);
+    res.status(201).json({
+      status: 'success',
+      count: tours.length,
+      data: tours,
     });
   } catch (error) {
     res.status(400).json({
