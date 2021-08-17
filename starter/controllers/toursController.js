@@ -67,7 +67,7 @@ exports.updateTour = async (req, res) => {
     const updateTour = await toursModel.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { new: true , runValidators : true}
     );
 
     res.status(201).json({
@@ -137,17 +137,43 @@ exports.getTourStats = async (req, res) => {
   }
 };
 exports.monthlyTours = async (req, res) => {
-  // const year = req.params.year;
+  const year = req.params.year * 1;
+   
+  ////show no of tours in a year
   try {
     const tours = await toursModel.aggregate([
       {
         $unwind: '$startDates',
       },
       {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
         $group:{
-          _id:"$startDates"
+             _id:{$month : '$startDates'},
+             sumOfMonthlyTours : {$sum : 1},
+             tours : { $push : '$tourName'},  ///we use push method to create a array in aggregate method
         }
-      }
+      },
+      {
+         $addFields : { month : "$_id"}
+      },
+      {
+        $project:{ ///removes the field if we give it 0
+          _id:0
+        }
+      },
+      {
+        $sort :{  sumOfMonthlyTours : -1}///sort -1 means descending order
+      },
+      // {
+      //   $limit:2 ///limit gives only the no of docs that we want it acts like pagination
+      // }
     ]);
     res.status(201).json({
       status: 'success',
