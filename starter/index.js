@@ -1,6 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
 
+const toursRouter = require('./routes/toursRoutes');
+const usersRouter = require('./routes/userRoutes');
+const AppError = require('./utils/appError')
+const errorController  = require('./controllers/errorController');
+
 const app = express();
 
 /// middleware => which stays in between the request and the response
@@ -17,8 +22,6 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'succesfully running' });
 });
 
-const toursRouter = require('./routes/toursRoutes');
-const usersRouter = require('./routes/userRoutes');
 
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
@@ -31,26 +34,16 @@ app.all('*', (req, res, next) => {
   //   message: `Cannot find ${req.originalUrl} from the server!`,
   // });
 
-  const err = new Error();
-  err.message = `Cannot find ${req.originalUrl} from the server!`;
-  err.status = 'Fail';
-  err.statusCode = 404;
+  // const err = new AppError();
+  // err.message = `Cannot find ${req.originalUrl} from the server !`;
+  // err.statusCode = 404;
 
 /////IF THE NEXT FUNCTION RECEIVES AN ARGUMENT NO MATTER WHAT IT IS EXPRESS WILL AUTOMATICALLY KNOW THAT THERE IS AN ERROR;
 ///WHENEVER WE PASS ANYTHING IN NEXT FUNCTION IT WILL TAKE IT AS A ERROR
 
-  next(err);
+  next(new AppError(`Cannot find ${req.originalUrl} from the server !`,404));
 });
 
-app.use((err, req, res, next) => {
-  console.log(err);
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  res.status(err.statusCode).send({
-    status: err.status,
-    message: err.message,
-  });
-});
+app.use(errorController);
 
 module.exports = app;
