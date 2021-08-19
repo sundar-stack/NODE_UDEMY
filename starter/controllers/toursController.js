@@ -20,14 +20,14 @@ exports.addTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllTours = catchAsync(async (req, res,next) => {
+exports.getAllTours = catchAsync(async (req, res, next) => {
   const features = new ApiFeatures(toursModel.find(), req.query)
     .filter()
     .sort()
     .limitingFields()
     .paginate();
   const getTours = await features.query;
-  
+
   //send the response
   res.status(201).json({
     status: 'success',
@@ -36,12 +36,12 @@ exports.getAllTours = catchAsync(async (req, res,next) => {
   });
 });
 
-exports.getTour = catchAsync(async (req, res,next) => {
+exports.getTour = catchAsync(async (req, res, next) => {
   const getTour = await toursModel.findById(req.params.id);
   /// alternate method :- model.findOne({ _id : req.params.id })
 
-  if(!getTour){
-    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID',404))
+  if (!getTour) {
+    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID', 404));
   }
   res.status(201).json({
     status: 'success',
@@ -49,15 +49,15 @@ exports.getTour = catchAsync(async (req, res,next) => {
   });
 });
 
-exports.updateTour = catchAsync(async (req, res,next) => {
+exports.updateTour = catchAsync(async (req, res, next) => {
   const updateTour = await toursModel.findByIdAndUpdate(
     req.params.id,
     req.body,
     { new: true, runValidators: true }
   );
 
-  if(!updateTour){
-    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID',404))
+  if (!updateTour) {
+    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID', 404));
   }
 
   res.status(201).json({
@@ -66,11 +66,11 @@ exports.updateTour = catchAsync(async (req, res,next) => {
   });
 });
 
-exports.deleteTour = catchAsync(async (req, res,next) => {
-  const tours =  await toursModel.findByIdAndDelete(req.params.id);
+exports.deleteTour = catchAsync(async (req, res, next) => {
+  const tours = await toursModel.findByIdAndDelete(req.params.id);
 
-  if(!tours){
-    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID',404))
+  if (!tours) {
+    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID', 404));
   }
   res.status(201).json({
     status: 'success',
@@ -80,7 +80,7 @@ exports.deleteTour = catchAsync(async (req, res,next) => {
 
 //AGGREFATION PIPELINING
 
-exports.getTourStats = catchAsync(async (req, res,next) => {
+exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await toursModel.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.5 } },
@@ -103,8 +103,8 @@ exports.getTourStats = catchAsync(async (req, res,next) => {
       $match: { _id: { $ne: 'EASY' } },
     },
   ]);
-  if(!stats){
-    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID',404))
+  if (!stats) {
+    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID', 404));
   }
   res.status(201).json({
     status: 'success',
@@ -113,54 +113,53 @@ exports.getTourStats = catchAsync(async (req, res,next) => {
   });
 });
 
-exports.monthlyTours = catchAsync(async (req, res,next) => {
+exports.monthlyTours = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
 
   ////show no of tours in a year
-    const tours = await toursModel.aggregate([
-      {
-        $unwind: '$startDates',
-      },
-      {
-        $match: {
-          startDates: {
-            $gte: new Date(`${year}-01-01`),
-            $lte: new Date(`${year}-12-31`),
-          },
+  const tours = await toursModel.aggregate([
+    {
+      $unwind: '$startDates',
+    },
+    {
+      $match: {
+        startDates: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`),
         },
       },
-      {
-        $group: {
-          _id: { $month: '$startDates' },
-          sumOfMonthlyTours: { $sum: 1 },
-          tours: { $push: '$tourName' }, ///we use push method to create a array in aggregate method
-        },
+    },
+    {
+      $group: {
+        _id: { $month: '$startDates' },
+        sumOfMonthlyTours: { $sum: 1 },
+        tours: { $push: '$tourName' }, ///we use push method to create a array in aggregate method
       },
-      {
-        $addFields: { month: '$_id' },
+    },
+    {
+      $addFields: { month: '$_id' },
+    },
+    {
+      $project: {
+        ///removes the field if we give it 0
+        _id: 0,
       },
-      {
-        $project: {
-          ///removes the field if we give it 0
-          _id: 0,
-        },
-      },
-      {
-        $sort: { sumOfMonthlyTours: -1 }, ///sort -1 means descending order
-      },
-      // {
-      //   $limit:2 ///limit gives only the no of docs that we want it acts like pagination
-      // }
-    ]);
+    },
+    {
+      $sort: { sumOfMonthlyTours: -1 }, ///sort -1 means descending order
+    },
+    // {
+    //   $limit:2 ///limit gives only the no of docs that we want it acts like pagination
+    // }
+  ]);
 
-    if(!tours){
-      return next(new AppError('THERE IS NO RECORD MATCHING THAT ID',404))
-    }
+  if (!tours) {
+    return next(new AppError('THERE IS NO RECORD MATCHING THAT ID', 404));
+  }
 
-    res.status(201).json({
-      status: 'success',
-      count: tours.length,
-      data: tours,
-    });
-  
+  res.status(201).json({
+    status: 'success',
+    count: tours.length,
+    data: tours,
+  });
 });

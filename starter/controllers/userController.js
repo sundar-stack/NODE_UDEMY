@@ -1,38 +1,11 @@
-///route handler functions
-const fs = require('fs');
+const userModel = require('../model/userModel');
+const catchAsync = require('../utils/catchAsync');
 
-let tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
+exports.signup = catchAsync(async (req, res, next) => {
+  const user = await userModel.create(req.body);
 
-exports.getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'server issue api in production build',
+  res.status(201).json({
+    status: 'success',
+    data: user,
   });
-};
-
-exports.addUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'server issue api in production build',
-  });
-};
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'server issue api in production build',
-  });
-};
-exports.modifyUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'server issue api in production build',
-  });
-};
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'server issue api in production build',
-  });
-};
+});

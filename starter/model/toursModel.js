@@ -72,6 +72,7 @@ const toursSchema = new Schema({
   priceDiscount:{
     type:Number,
       ///custom validators => validate the function 
+      //THIS ONLY WORKS ON SAVE AND CREATE
     validate:{
       validator:function(value){
         // console.log(value,this.price); 

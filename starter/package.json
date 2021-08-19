@@ -5,16 +5,18 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "debug":"ndb server.js"
+    "start:prod": "ENVIRONMENT=production nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "mongoose": "^5.13.6",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
@@ -27,5 +29,8 @@
     "eslint-plugin-react": "^7.24.0",
     "ndb": "^1.1.5",
     "prettier": "^2.3.2"
+  },
+  "engines": {
+    "node": ">=10.0.0"
   }
 }

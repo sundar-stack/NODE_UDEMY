@@ -27,17 +27,7 @@ app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
 
 //unhandled routes if the requestURL is incorrect
-
 app.all('*', (req, res, next) => {
-  // res.status(404).send({
-  //   status: 'fail',
-  //   message: `Cannot find ${req.originalUrl} from the server!`,
-  // });
-
-  // const err = new AppError();
-  // err.message = `Cannot find ${req.originalUrl} from the server !`;
-  // err.statusCode = 404;
-
 /////IF THE NEXT FUNCTION RECEIVES AN ARGUMENT NO MATTER WHAT IT IS EXPRESS WILL AUTOMATICALLY KNOW THAT THERE IS AN ERROR;
 ///WHENEVER WE PASS ANYTHING IN NEXT FUNCTION IT WILL TAKE IT AS A ERROR
 
