@@ -4,10 +4,12 @@ const router = express.Router();
 
 const toursController = require('../controllers/toursController');
 const practiceController = require('../controllers/practiceController');
+const authController = require('../controllers/authController');
+
 
 router
   .route('/')
-  .get(toursController.getAllTours)
+  .get(authController.protect,toursController.getAllTours)
   .post(toursController.addTour);
 
 //aliasing routes for special filtering

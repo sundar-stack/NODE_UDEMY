@@ -2,9 +2,7 @@ const mongoose = require('mongoose');
 const Validator = require('validator');
 const bcrypt = require('bcryptjs')
 
-const Schema = mongoose.Schema;
-
-const UsersSchema = new Schema({
+const UsersSchema = new mongoose.Schema({
   userName: {
     type: String,
     required: [true, 'Username Required'],
@@ -25,6 +23,7 @@ const UsersSchema = new Schema({
     maxLength: [15, 'Password should be below 15 characters'],
     minLength: [8, 'Password must be above or equal to 8 characters'],
     trim: true,
+    select:false
   },
   confirmPassword: {
     type: String,
@@ -52,5 +51,10 @@ UsersSchema.pre('save',async function(next){
 
    next()
 })
+
+///password verification
+UsersSchema.methods.correctPassword = async function(bodyPassword , userPassword){
+  return await bcrypt.compare(bodyPassword , userPassword)
+}
 
 module.exports = mongoose.model('Users', UsersSchema);
