@@ -1,21 +1,22 @@
 /////mongoose save method
 // const body = req.body;
-// console.log("body",body);
+  // console.log("body",body);
 
-// const newTourBody = new toursModel(body);
-// newTourBody.save({}, (err, docs) => {
-//   if (err) {
-//     res.status(400).json({
-//       status: 'Error',
-//       message: err,
-//     });
-//   } else {
-//     res.status(201).json({
-//       status: 'success',
-//       data: docs,
-//     });
-//   }
-// });
+  // const newTourBody = new toursModel(body);
+  // newTourBody.save({}, (err, docs) => {
+  //   if (err) {
+  //     res.status(400).json({
+  //       status: 'Error',
+  //       message: err,
+  //     });
+  //   } else {
+  //     res.status(201).json({
+  //       status: 'success',
+  //       data: docs,
+  //     });
+  //   }
+  // });
+
 
 ////////// FILTERING
 
@@ -86,6 +87,3 @@
 
 ///execute the query
 ///for better chaining we have do like this
-
-//removing dum
-///////////hmmmmmm from master
