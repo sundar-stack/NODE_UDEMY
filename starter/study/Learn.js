@@ -88,5 +88,3 @@
 ///execute the query
 ///for better chaining we have do like this
 
-//removing dum
-///i am the wonderful guy
