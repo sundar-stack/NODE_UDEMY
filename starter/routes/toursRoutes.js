@@ -9,7 +9,7 @@ const authController = require('../controllers/authController');
 
 router
   .route('/')
-  .get(authController.protect,toursController.getAllTours)
+  .get(authController.protect,authController.restrictTo('admin','researcher'),toursController.getAllTours)
   .post(toursController.addTour);
 
 //aliasing routes for special filtering
@@ -25,6 +25,6 @@ router
   .route('/:id')
   .get(toursController.getTour)
   .patch(toursController.updateTour)
-  .delete(toursController.deleteTour);
+  .delete(authController.protect,authController.restrictTo('admin','researcher'),toursController.deleteTour);
 
 module.exports = router;
