@@ -45,6 +45,11 @@ const UsersSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 /////ENCRYPTING THE PASSWORD
@@ -58,6 +63,23 @@ UsersSchema.pre('save', async function (next) {
   //Delete passwordConfirm Field
   this.confirmPassword = undefined;
 
+  next();
+});
+
+UsersSchema.pre('save', async function (next) {
+  ///isModified and isNew are mongoose methods
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  console.log(
+    'PASSWORD CHANGED AT>>>',
+    new Date(this.passwordChangedAt).toLocaleTimeString()
+  );
+});
+
+UsersSchema.pre(/^find/, function(next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
   next();
 });
 
@@ -86,8 +108,7 @@ UsersSchema.methods.passwordChanged = async function (JWTTimestamp) {
 };
 
 UsersSchema.methods.createPasswordResetToken = async function () {
-
-  ////encrypt the token and store it in database 
+  ////encrypt the token and store it in database
   const resetToken = crypto.randomBytes(32).toString('hex');
   this.resetPasswordToken = crypto
     .createHash('sha256')
@@ -97,7 +118,7 @@ UsersSchema.methods.createPasswordResetToken = async function () {
 
   ///send the normal token to the user's mail
 
-  return resetToken
+  return resetToken;
 };
 
 module.exports = mongoose.model('Users', UsersSchema);

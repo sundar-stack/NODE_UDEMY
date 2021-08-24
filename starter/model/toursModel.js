@@ -24,18 +24,19 @@ const toursSchema = new Schema({
   difficulty: {
     type: String,
     required: [true, 'A tour must have a difficulty'],
-      //validators
-    enum:{
-      values:["easy","medium","difficult"],
-      message:" Difficulty should be one of these options: easy , medium , difficult "
-    }
+    //validators
+    enum: {
+      values: ['easy', 'medium', 'difficult'],
+      message:
+        ' Difficulty should be one of these options: easy , medium , difficult ',
+    },
   },
   ratingsAverage: {
     type: Number,
     default: 4.5,
-      //validators
-    min:[1,'Ratings must be above 1.0'],
-    max:[5,'Ratings must be below 5.0'],
+    //validators
+    min: [1, 'Ratings must be above 1.0'],
+    max: [5, 'Ratings must be below 5.0'],
   },
   ratingsQuantity: {
     type: Number,
@@ -69,18 +70,18 @@ const toursSchema = new Schema({
     default: Date.now(),
     select: false, //select:false permanently hides the field in the api response
   },
-  priceDiscount:{
-    type:Number,
-      ///custom validators => validate the function 
-      //THIS ONLY WORKS ON SAVE AND CREATE
-    validate:{
-      validator:function(value){
-        // console.log(value,this.price); 
-        return value < this.price ///only false will trigger the validation error
+  priceDiscount: {
+    type: Number,
+    ///custom validators => validate the function
+    //THIS ONLY WORKS ON SAVE AND CREATE
+    validate: {
+      validator: function (value) {
+        // console.log(value,this.price);
+        return value < this.price; ///only false will trigger the validation error
       },
-      message:`Discount of ({VALUE}) should not be more than price`
-    }
-  }
+      message: `Discount of ({VALUE}) should not be more than price`,
+    },
+  },
 });
 
 ///DOCUMENT MIDDLEWARE => this middleware will run before save() and create()

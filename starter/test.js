@@ -35,3 +35,21 @@
 //   arr: ['sundar', 'nebula']
 // };
 // console.log(userName ,password,arr);
+
+// const filterObj = (obj, ...rest) => {
+//   console.log(obj, rest);
+
+//   const newObj = {};
+//   Object.keys(obj).forEach(value => { 
+//    if(rest.includes(value)) newObj[value] = obj[value]
+//   })
+//  return newObj
+// };
+
+// const body = {
+//   userName: 'SUNDAR',
+//   password: 'sundar',
+//   role:"dddfvf"
+// };
+
+// console.log(filterObj(body, 'userName', 'password'));
