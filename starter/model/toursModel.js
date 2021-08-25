@@ -45,7 +45,7 @@ const toursSchema = new Schema({
   price: {
     type: Number,
     trim: true,
-    required: [true, 'A tour must have a description'],
+    required: [true, 'A tour must have a price'],
   },
   summary: {
     type: String,

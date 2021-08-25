@@ -2,6 +2,9 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const toursRouter = require('./routes/toursRoutes');
 const usersRouter = require('./routes/userRoutes');
@@ -21,6 +24,26 @@ app.use(express.json());
 
 ////limit the body data upto N size
 // app.use(express.json({ limit: '10kb' }));
+
+//Data Sanitize against NoSql query injection ///ex:-inserting some mongo query in the input fields
+app.use(mongoSanitize());
+
+//Data Sanitize against xss //ex:- like inserting html or js code in input fields xss converts the code into string
+app.use(xss());
+
+///Avoiding Parameter Pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 
 ////Development Logging
 if (process.env.ENVIRONMENT === 'development') {

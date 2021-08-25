@@ -36,6 +36,7 @@ const sendErrDev = (err, res) => {
     stack: err.stack,
   });
 };
+
 const sendErrProd = (err, res) => {
   ///OPERATIONAL ERROR
   // console.log(err);
