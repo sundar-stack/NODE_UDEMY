@@ -17,7 +17,14 @@ router.patch(
 );
 router.get('/getAllUsers', authController.protect, userController.getAllUsers);
 router.delete('/deleteUser', authController.protect, userController.deleteUser);
-router.patch('/updateUser', authController.protect, userController.updateUser);
+
+router.patch(
+  '/updateUser',
+  authController.protect,
+  userController.uploadUserPhoto,
+  userController.compressUserPhoto,
+  userController.updateUser
+);
 
 ////test route
 router.get('/auth', authController.protect, authController.checkAuth);

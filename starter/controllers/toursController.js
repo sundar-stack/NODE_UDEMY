@@ -2,6 +2,8 @@ const toursModel = require('../model/toursModel');
 const ApiFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const multer = require('multer');
+const sharp = require('sharp');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = 5;
@@ -9,6 +11,58 @@ exports.aliasTopTours = (req, res, next) => {
   req.query.fields = 'tourName,difficulty,ratingsAverage,price,summary';
   next();
 };
+
+const multerStorage = multer.memoryStorage();
+
+const upload = multer({
+  storage: multerStorage,
+});
+
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+///upload.single('image')///for uploading single pic
+///upload.array('image')///for uploading  multiple images
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  ///req.file for one pic //req.files for multiple images
+
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+
+  // console.log(req.files);
+
+  ///process single image
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1300)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  ////process multiple images
+
+  req.body.images = [];
+
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      // console.log(file);
+
+      const fileName = `tour-${req.params.id}-${Date.now()}-tour_${i}.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(500, 500)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${fileName}`);
+
+      req.body.images.push(fileName);
+    })
+  );
+  next();
+});
 
 exports.addTour = catchAsync(async (req, res, next) => {
   const body = req.body;
@@ -53,8 +107,9 @@ exports.updateTour = catchAsync(async (req, res, next) => {
   const updateTour = await toursModel.findByIdAndUpdate(
     req.params.id,
     req.body,
-    { new: true, runValidators: true }
+    { new: true, runValidators: true, useFindAndModify: false }
   );
+  // console.log("updateTour>>>>>>",updateTour);
 
   if (!updateTour) {
     return next(new AppError('THERE IS NO RECORD MATCHING THAT ID', 404));

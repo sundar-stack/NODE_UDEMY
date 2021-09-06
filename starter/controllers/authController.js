@@ -57,13 +57,17 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   ////check if user is there and password is correct or invalid
+
   const user = await userModel.findOne({ email: email }).select('+password'); //we have disabled password field in model but here we need password for verififcation so we are using select +
   console.log('user', user);
+  if (!user) {
+    return next(new AppError('Incorrect email', 401));
+  }
   const decryptPass = await user.correctPassword(password, user.password);
   console.log('decryptPass', decryptPass);
 
-  if (!user || !decryptPass) {
-    return next(new AppError('Incorrect email or password', 401));
+  if (!decryptPass) {
+    return next(new AppError('Incorrect password', 401));
   }
 
   ////create and send the token
@@ -86,9 +90,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!token) {
     return next(
       new AppError(
-        'Authorization Failed! You are not logged in Please Login to get access'
-      ),
-      401
+        'Authorization Failed! You are not logged in Please Login to get access',
+        401
+      )
     );
   }
 

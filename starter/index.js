@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cors = require('cors');
 
 const toursRouter = require('./routes/toursRoutes');
 const usersRouter = require('./routes/userRoutes');
@@ -19,8 +20,13 @@ const app = express();
 ///Sets security http requests
 app.use(helmet());
 
+app.use(express.static(__dirname + '/public'));
+app.use('/img', express.static('img'));
+
 ////Body parser for accessing the req.body object
 app.use(express.json());
+
+app.use(cors());
 
 ////limit the body data upto N size
 // app.use(express.json({ limit: '10kb' }));
@@ -74,7 +80,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
 
-//unhandled routes if the requestURL is incorrect
+// unhandled routes if the requestURL is incorrect
 app.all('*', (req, res, next) => {
   /////IF THE NEXT FUNCTION RECEIVES AN ARGUMENT NO MATTER WHAT IT IS EXPRESS WILL AUTOMATICALLY KNOW THAT THERE IS AN ERROR;
   ///WHENEVER WE PASS ANYTHING IN NEXT FUNCTION IT WILL TAKE IT AS A ERROR
