@@ -71,13 +71,13 @@ UsersSchema.pre('save', async function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
-  console.log(
-    'PASSWORD CHANGED AT>>>',
-    new Date(this.passwordChangedAt).toLocaleTimeString()
-  );
+  // console.log(
+  //   'PASSWORD CHANGED AT>>>',
+  //   new Date(this.passwordChangedAt).toLocaleTimeString()
+  // );
 });
 
-UsersSchema.pre(/^find/, function(next) {
+UsersSchema.pre(/^find/, function (next) {
   // this points to the current query
   this.find({ active: { $ne: false } });
   next();
@@ -98,7 +98,7 @@ UsersSchema.methods.passwordChanged = async function (JWTTimestamp) {
       10
     );
 
-    console.log(passChangedTimestamp, JWTTimestamp);
+    // console.log(passChangedTimestamp, JWTTimestamp);
 
     return passChangedTimestamp > JWTTimestamp;
   }

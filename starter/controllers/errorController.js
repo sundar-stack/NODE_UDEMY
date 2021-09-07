@@ -24,7 +24,7 @@ const handleJWTAuthError = (err) =>
 const handleJwtExpireErr = (err) => {
   const message = `Your session has expired at : ${new Date(
     err.expiredAt
-  ).toISOString()} PLease login again!`;
+  ).toLocaleString()} PLease login again!`;
   return new AppError(message, 401);
 };
 

@@ -116,10 +116,10 @@ toursSchema.pre('aggregate', function (next) {
   next();
 });
 
-toursSchema.post(/^find/, function (docs, next) {
-  console.log(`query took ${Date.now() - this.start} milliseconds to execute!`);
-  // console.log(docs);
-  next();
-});
+// toursSchema.post(/^find/, function (docs, next) {
+//   console.log(`query took ${Date.now() - this.start} milliseconds to execute!`);
+//   // console.log(docs);
+//   next();
+// });
 
 module.exports = mongoose.model('Tours', toursSchema);

@@ -2,7 +2,7 @@ const userModel = require('../model/userModel');
 const catchAsync = require('../utils/catchAsync');
 const JWT = require('jsonwebtoken');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 const crypto = require('crypto');
 
 const signInToken = (userId) => {
@@ -44,6 +44,11 @@ exports.signup = catchAsync(async (req, res, next) => {
     req.body
   );
 
+  await new Email(
+    user,
+    `${req.protocol}://${req.get('host')}/updateUser`
+  ).sendWelcome();
+
   createSendToken(res, user, 201);
 });
 
@@ -59,12 +64,12 @@ exports.login = catchAsync(async (req, res, next) => {
   ////check if user is there and password is correct or invalid
 
   const user = await userModel.findOne({ email: email }).select('+password'); //we have disabled password field in model but here we need password for verififcation so we are using select +
-  console.log('user', user);
+  // console.log('user', user);
   if (!user) {
     return next(new AppError('Incorrect email', 401));
   }
   const decryptPass = await user.correctPassword(password, user.password);
-  console.log('decryptPass', decryptPass);
+  // console.log('decryptPass', decryptPass);
 
   if (!decryptPass) {
     return next(new AppError('Incorrect password', 401));
@@ -131,7 +136,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 exports.restrictTo = (...rest) => {
   return (req, res, next) => {
-    console.log(rest);
+    // console.log(rest);
     if (!rest.includes(req.user.role)) {
       return next(
         new AppError('You dont have permission to perform this action!', 403)
@@ -159,14 +164,10 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     'host'
   )}/api/v1/users/${randomToken}`;
 
-  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+  // const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
-      message,
-    });
+    await new Email(user, resetURL).sendResetPassword();
 
     res.status(200).json({
       status: 'success',
@@ -220,14 +221,14 @@ exports.updateMyPassword = catchAsync(async (req, res, next) => {
   //// Get user from the collection
   ////findById will not work as intended
   const user = await userModel.findById(req.user._id).select('+password');
-  console.log('user>>>>>?????????????>>>>>>>>>', user);
+  // console.log('user>>>>>?????????????>>>>>>>>>', user);
 
   //// check if posted password is correct with db password
   const decodedPassword = await user.correctPassword(
     req.body.currentPassword,
     user.password
   );
-  console.log(decodedPassword);
+  // console.log(decodedPassword);
   if (!decodedPassword) {
     return next(new AppError('Your current password is wrong!', 401));
   }
@@ -245,7 +246,7 @@ exports.updateMyPassword = catchAsync(async (req, res, next) => {
   /// If so, Update Password
   user.password = req.body.password;
   user.confirmPassword = req.body.confirmPassword;
-  console.log('Npassword>>>>>>>>>>>>>>>>>', user.password);
+  // console.log('Npassword>>>>>>>>>>>>>>>>>', user.password);
   await user.save();
 
   /// Log user in, send JWT

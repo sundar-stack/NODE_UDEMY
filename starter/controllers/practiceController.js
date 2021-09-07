@@ -16,14 +16,14 @@ exports.practiceGetAllTours = async (req, res) => {
   ); 
   //   console.log(JSON.parse(paramString));
 
-  console.log('queryOBJ>>>', req.query, 'after excluding>>>>', queryObj);
+  // console.log('queryOBJ>>>', req.query, 'after excluding>>>>', queryObj);
   try {
     let query = toursModel.find(JSON.parse(paramString));
 
     //SORTING
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' ');
-      console.log(sortBy);
+      // console.log(sortBy);
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
@@ -46,7 +46,7 @@ exports.practiceGetAllTours = async (req, res) => {
     query = query.skip(skip).limit(limit);
     if(req.query.page){
         const docsLength = await toursModel.countDocuments()
-        console.log(docsLength);
+        // console.log(docsLength);
         if(page >= docsLength) throw new Error('NO FILES ON THE PAGE ')
     }
     // INORDER TO APPLY DIFFERENT TYPE OF FILTERS TO OUR REQUEST WE ARE TAKING THE MONGOOSE METHOD IN A NEW VARIABLE
